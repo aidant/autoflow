@@ -49,7 +49,7 @@ export const set = <Value extends Uint8Array>(key: string, value: Value): Value 
 }
 
 const ensureSchema = db.prepare(
-  `INSERT INTO "KV" ("id", "key", "value") VALUES (?, ?, ?) ON CONFLICT("key") DO UPDATE SET "key" = "excluded"."key"`,
+  `INSERT INTO "KV" ("id", "key", "value") VALUES (?, ?, ?) ON CONFLICT("key") DO UPDATE SET "key" = "excluded"."key" RETURNING *`,
 )
 
 export const ensure = (key: string, value: Uint8Array): Uint8Array => {

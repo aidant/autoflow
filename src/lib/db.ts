@@ -1,6 +1,7 @@
 import { default as Database } from 'better-sqlite3'
+import { getEnvironmentVariable } from './util-environment-variable.js'
 
-export const db = new Database(':memory:')
+export const db = new Database(getEnvironmentVariable('DATABASE_URL') || ':memory:')
 
 db.pragma('journal_mode = WAL')
 
