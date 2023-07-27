@@ -1,4 +1,5 @@
 import { default as argon2 } from 'argon2'
+import { SqliteError as SQLiteError } from 'better-sqlite3'
 import { DateTime } from 'luxon'
 import { parse, stringify, v4 as uuidv4 } from 'uuid'
 import { createOrganisation } from './db-organisation.js'
@@ -11,6 +12,7 @@ import {
   type NotNull,
   type Schema,
 } from './db.js'
+import { ValidationError } from './error-validation.js'
 
 export type UserSchema = Schema<{
   username: ColumnType<NotNull<string>>
@@ -58,14 +60,29 @@ const createUserStatement = db.prepare(
 )
 
 export const createUser = async (user: Create<UserSchema>): Promise<User> => {
-  const row = createUserStatement.get(
-    parse(uuidv4()),
-    user.username,
-    await argon2.hash(user.password, { type: argon2.argon2id }),
-    parse(
-      user.organisationId || createOrganisation({ name: `${user.username}'s organisation` }).id,
-    ),
-  ) as DB<UserSchema>
+  const id = parse(uuidv4())
+  const username = user.username
+  const password = await argon2.hash(user.password, { type: argon2.argon2id })
+  const organisationId = parse(
+    user.organisationId || createOrganisation({ name: `${user.username}'s organisation` }).id,
+  )
+
+  let row: DB<UserSchema>
+  try {
+    row = createUserStatement.get(id, username, password, organisationId) as DB<UserSchema>
+  } catch (error) {
+    if (error instanceof SQLiteError) {
+      if (error.code === 'SQLITE_CONSTRAINT_UNIQUE' && error.message.includes('User.username')) {
+        throw new ValidationError('Unable to create account, username is not unique', {
+          invalid: {
+            username: 'Username is already taken',
+          },
+          data: user,
+        })
+      }
+    }
+    throw error
+  }
 
   return convert(row)
 }
@@ -86,12 +103,19 @@ const getUserByUsernameAndPasswordStatement = db.prepare(
 
 export const getUserByUsernameAndPassword = async (
   credentials: Pick<User, 'username' | 'password'>,
-): Promise<User | null> => {
+): Promise<User> => {
   const row = getUserByUsernameAndPasswordStatement.get(
     credentials.username,
   ) as DB<UserSchema> | null
 
-  if (!row) return null
+  if (!row) {
+    throw new ValidationError('Unable get get the user by username and password', {
+      invalid: {
+        username: 'User not found',
+      },
+      data: credentials,
+    })
+  }
 
   const user = convert(row)
 
@@ -99,7 +123,14 @@ export const getUserByUsernameAndPassword = async (
     type: argon2.argon2id,
   })
 
-  if (!isPasswordCorrect) return null
+  if (!isPasswordCorrect) {
+    throw new ValidationError('Unable to get user by username and password', {
+      invalid: {
+        password: 'Password is incorrect',
+      },
+      data: credentials,
+    })
+  }
 
   return user
 }

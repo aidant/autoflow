@@ -1,6 +1,8 @@
 import type { JWK } from 'jose'
 import { generateKeyPair } from 'node:crypto'
-import { decode, encode } from './util-encoding'
+import * as kv from './db-kv.js'
+import { decode, encode } from './util-encoding.js'
+import { getEnvironmentVariable } from './util-environment-variable.js'
 
 export const create = async (): Promise<JWK> => {
   return await {
@@ -33,3 +35,13 @@ const exportKey = (jwk: JWK): Uint8Array => {
 }
 
 export { exportKey as export }
+
+export const jwk = async (): Promise<JWK> => {
+  const AUTOFLOW_JWK = getEnvironmentVariable('AUTOFLOW_JWK')
+
+  if (AUTOFLOW_JWK) {
+    return JSON.parse(AUTOFLOW_JWK)
+  }
+
+  return importKey(kv.ensure('autoflow:jwk', exportKey(await create())))
+}

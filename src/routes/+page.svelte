@@ -1,7 +1,8 @@
-<h1 class="mx-2 my-4 text-4xl">Welcome to SvelteKit</h1>
-<p class="m-2"
-  >Visit <a
-    class="text-blue-500 underline"
-    href="https://kit.svelte.dev">kit.svelte.dev</a
-  > to read the documentation</p
->
+<main class="h-screen w-screen flex flex-col justify-center items-center gap-8">
+  <h1 class="font-serif text-9xl">AutoFlow</h1>
+
+  <a
+    href="/user/login"
+    class="text-white bg-primary rounded py-2 px-24">Login</a
+  >
+</main>
