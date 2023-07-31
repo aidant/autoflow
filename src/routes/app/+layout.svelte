@@ -5,9 +5,9 @@
   export let data: LayoutData
 </script>
 
-<div class="flex flex-row justify-between h-screen w-screen overflow-clip">
+<div class="flex flex-row justify-between h-screen w-screen overflow-clip p-3 gap-4">
   <menu
-    class="m-3 max-w-xs w-full bg-text/5 backdrop-blur-xl rounded-lg ring-2 ring-text/25 flex flex-col z-10"
+    class="max-w-xs w-full bg-text/5 backdrop-blur-xl rounded-lg ring-2 ring-text/25 flex flex-col z-10"
   >
     <div class="mt-auto m-4 flex flex-row gap-4">
       <div class="bg-secondary w-8 h-8 rounded-full" />

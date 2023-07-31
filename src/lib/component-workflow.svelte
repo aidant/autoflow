@@ -1,49 +1,17 @@
 <script lang="ts">
-  type Position = { x: number; y: number }
+  import { draggable, type Position } from '$lib/action-draggable'
+  import type { Writable } from 'svelte/store'
 
-  export let position: Position
-
-  let initial: Position | null = null
-
-  const handlePointerDown = (event: PointerEvent) => {
-    initial = {
-      x: event.pageX,
-      y: event.pageY,
-    }
-  }
-
-  const handlePointerUp = () => {
-    initial = null
-  }
-
-  const handlePointerMove = (event: PointerEvent) => {
-    if (!initial) return
-
-    const x = event.pageX - initial.x
-    const y = event.pageY - initial.y
-
-    initial = {
-      x: event.pageX,
-      y: event.pageY,
-    }
-
-    position.x += x
-    position.y += y
-  }
+  export let position: Writable<Position>
 </script>
 
-<svelte:window
-  on:pointerup={handlePointerUp}
-  on:pointermove={handlePointerMove}
-/>
-
 <div
-  class="ring-2 rounded-lg ring-text/25 bg-text/5 backdrop-blur-xl shadow-2xl shadow-text/5 w-96 h-96 translate-x-[var(--position-x)] translate-y-[var(--position-y)]"
-  style="--position-x: {position.x}px; --position-y: {position.y}px"
+  class="ring-2 rounded-lg ring-text/25 bg-text/5 backdrop-blur-xl shadow-2xl shadow-text/5 w-96 h-96 absolute"
+  style="transform: translate(-50%, -50%) translate({$position.x}px, {$position.y}px)"
 >
   <div
-    on:pointerdown={handlePointerDown}
-    class="bg-background/5 rounded-t-lg cursor-grab"
+    use:draggable={position}
+    class="bg-background/5 rounded-t-lg"
   >
     <h1 class="font-serif text-lg px-4 py-1">Weather</h1>
   </div>
