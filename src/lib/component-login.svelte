@@ -1,12 +1,15 @@
 <script lang="ts">
   import { enhance } from '$app/forms'
   import { writable } from 'svelte/store'
+  import type { ZodString } from 'zod'
   import type { ValidationDetails } from './error-validation'
   import { formValidation } from './form-validation-client'
   import { formValidationFromZod } from './form-validation-from-zod'
   import {
-    PasswordSchema,
-    UsernameSchema,
+    PasswordCreateSchema,
+    PasswordLoginSchema,
+    UsernameCreateSchema,
+    UsernameLoginSchema,
     type UsernameAndPassword,
   } from './schema-username-and-password'
 
@@ -19,15 +22,37 @@
 
   $: if (form?.invalid?.username) $errorMessageForUsername = form.invalid.username
   $: if (form?.invalid?.password) $errorMessageForPassword = form.invalid.password
+
+  let UsernameSchema: ZodString
+  let PasswordSchema: ZodString
+
+  $: {
+    if (type === 'login') {
+      UsernameSchema = UsernameLoginSchema
+      PasswordSchema = PasswordLoginSchema
+    }
+    if (type === 'create') {
+      UsernameSchema = UsernameCreateSchema
+      PasswordSchema = PasswordCreateSchema
+    }
+  }
 </script>
 
 <form
   use:enhance
-  class="flex flex-col gap-4 px-8 pt-8 pb-5"
+  class="flex flex-col gap-4 px-8 pt-8 pb-5 ring-2 rounded-lg ring-text/25 bg-text bg-opacity-5 shadow-2xl shadow-primary/20 w-full max-w-sm backdrop-blur-lg"
   method="POST"
 >
-  <h1 class="font-serif text-3xl text-center">AutoFlow</h1>
-  <hr class="border border-text opacity-5 my-2" />
+  <h1 class="font-serif text-3xl text-center font-medium">
+    {#if type === 'login'}
+      Welcome back
+    {/if}
+
+    {#if type === 'create'}
+      Create an account
+    {/if}
+  </h1>
+  <hr class="border border-text/25 my-2" />
 
   <div>
     <label for="username">
@@ -107,7 +132,7 @@
 
 <style lang="postcss">
   input {
-    @apply mt-1 block w-full rounded border-2 border-text border-opacity-10 bg-background px-4 py-2 text-current;
+    @apply mt-1 block w-full rounded border-2 border-text/25 bg-background px-4 py-2 text-current;
   }
 
   input[aria-invalid='true'] {

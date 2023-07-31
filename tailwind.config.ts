@@ -14,9 +14,9 @@ export default {
       },
 
       fontFamily: {
-        sans: ['Raleway', ...theme.fontFamily.sans],
-        serif: ['Fraunces', ...theme.fontFamily.serif],
-        mono: ['Fira Code', ...theme.fontFamily.mono],
+        sans: ['Raleway Variable', ...theme.fontFamily.sans],
+        serif: ['Fraunces Variable', ...theme.fontFamily.serif],
+        mono: ['Fira Code Variable', ...theme.fontFamily.mono],
       },
     },
   },

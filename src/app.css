@@ -6,15 +6,17 @@
 /* https://realtimecolors.com/?colors=09090B-FAFAFA-BE123C-FECDD3-E11D48 */
 
 @layer base {
-  :root {
-    --color-text: 240deg 10% 4%; /* zinc-950 */
-    --color-background: 0deg 0% 98%; /* zinc-50 */
-    --color-primary: 345deg 83% 41%; /* rose-700 */
-    --color-secondary: 353deg 96% 90%; /* rose-200 */
-    --color-accent: 347deg 77% 50%; /* rose-600 */
+  @media (prefers-color-scheme: light) {
+    :root {
+      --color-text: 240deg 10% 4%; /* zinc-950 */
+      --color-background: 0deg 0% 98%; /* zinc-50 */
+      --color-primary: 345deg 83% 41%; /* rose-700 */
+      --color-secondary: 353deg 96% 90%; /* rose-200 */
+      --color-accent: 347deg 77% 50%; /* rose-600 */
+    }
   }
 
-  @media (prefers-color-scheme: dark) {
+  @media (prefers-color-scheme: dark), (prefers-color-scheme: no-preference) {
     :root {
       --color-text: 0deg 0% 100%; /* white */
       --color-background: 0deg 0% 0%; /* black */
