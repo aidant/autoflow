@@ -1,15 +1,17 @@
 import type { ZodString } from 'zod'
 
-export const formValidationFromZod = <Schema extends ZodString>(
-  el: HTMLInputElement,
-  schema: Schema,
-) => {
+export const zodSchemaToValidator = (schema: ZodString) => {
+  return (value: string) => {
+    const result = schema.safeParse(value)
+    return !result.success ? result.error.issues[0].message : ''
+  }
+}
+
+export const formValidator = (el: HTMLInputElement, validator: (value: string) => string) => {
   let dirty = false
 
   const check = () => {
-    const result = schema.safeParse(el.value)
-    const message = !result.success ? result.error.issues[0].message : ''
-    el.setCustomValidity(message)
+    el.setCustomValidity(validator(el.value))
     el.reportValidity()
   }
 

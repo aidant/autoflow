@@ -5,13 +5,15 @@ export type Position = {
   y: number
 }
 
-export const draggable = (el: HTMLElement, position$: Writable<Position>) => {
+export const draggable = (el: HTMLElement, position$: Pick<Writable<Position>, 'update'>) => {
   let initial: Position | null = null
 
   const handlePointerDown = (event: PointerEvent) => {
-    initial = {
-      x: event.pageX,
-      y: event.pageY,
+    if (event.buttons & 0b1) {
+      initial = {
+        x: event.pageX,
+        y: event.pageY,
+      }
     }
   }
 
@@ -21,6 +23,8 @@ export const draggable = (el: HTMLElement, position$: Writable<Position>) => {
 
   const handlePointerMove = (event: PointerEvent) => {
     if (!initial) return
+
+    event.preventDefault()
 
     position$.update((position) => {
       initial ??= {

@@ -3,8 +3,8 @@
   import { writable } from 'svelte/store'
   import type { ZodString } from 'zod'
   import type { ValidationDetails } from './error-validation'
-  import { formValidation } from './form-validation-client'
-  import { formValidationFromZod } from './form-validation-from-zod'
+  import { formValidationMessage } from './form-validation-message'
+  import { formValidator, zodSchemaToValidator } from './form-validator'
   import {
     PasswordCreateSchema,
     PasswordLoginSchema,
@@ -55,13 +55,12 @@
   <hr class="border border-text/25 my-2" />
 
   <div>
-    <label for="username">
+    <label>
       Username
 
       <input
-        use:formValidationFromZod={UsernameSchema}
-        use:formValidation={errorMessageForUsername}
-        id="username"
+        use:formValidator={zodSchemaToValidator(UsernameSchema)}
+        use:formValidationMessage={errorMessageForUsername}
         type="text"
         name="username"
         aria-required="true"
@@ -75,13 +74,12 @@
   </div>
 
   <div>
-    <label for="password">
+    <label>
       Password
 
       <input
-        use:formValidationFromZod={PasswordSchema}
-        use:formValidation={errorMessageForPassword}
-        id="password"
+        use:formValidator={zodSchemaToValidator(PasswordSchema)}
+        use:formValidationMessage={errorMessageForPassword}
         type="password"
         name="password"
         aria-required="true"

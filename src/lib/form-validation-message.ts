@@ -1,6 +1,6 @@
 import type { Writable } from 'svelte/store'
 
-export const formValidation = (el: HTMLInputElement, writable: Writable<string>) => {
+export const formValidationMessage = (el: HTMLInputElement, writable: Writable<string>) => {
   const handleInvalid = (event: Event) => {
     event.preventDefault()
     writable.set(el.validationMessage)
